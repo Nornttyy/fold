@@ -1,0 +1,11 @@
+.cache/
+test-results/
+node_modules/
+.DS_Store
+dist/
+# Retired local prototypes; not part of the playable release.
+src/app.js
+src/render.js
+assets/hit-flick.wav
+# Local optional Actions template; this account publishes with native branch Pages.
+.github/workflows/pages.yml
