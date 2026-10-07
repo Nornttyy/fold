@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b111e"><title>Fold</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230b111e'/%3E%3Cpath d='M12 46 30 18h12L24 46zm18 0 18-28h8L38 46z' fill='%2399cfff'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css?v=24b2beed2b7f">
+</head>
+<body>
+  <main id="home" class="screen home">
+    <header class="topbar"><div class="brand"><svg viewBox="0 0 50 38" aria-hidden="true"><path d="M1 34 22 4h10L11 34zm20 0L42 4h7L28 34z"/></svg><span>折拍<small>FOLD / 4K</small></span></div><div class="header-actions"><button id="tutorial-open" class="text-button" disabled>入门练习 <span>↗</span></button><button id="menu-audio" class="text-button" aria-label="界面音乐" aria-pressed="false">♫</button><button id="settings-open" class="text-button">声音与延迟</button><button id="fullscreen" class="text-button" aria-label="全屏">⛶</button></div></header>
+    <nav class="chapter-list" aria-label="选择章节"><button data-chapter="1" aria-pressed="true"><small>CHAPTER 01</small><strong>初醒</strong><span>AWAKEN</span></button><button data-chapter="2" aria-pressed="false"><small>CHAPTER 02</small><strong>折光</strong><span>REFRACT</span></button><button data-chapter="3" aria-pressed="false"><small>CHAPTER 03</small><strong>越界</strong><span>BEYOND</span></button></nav>
+    <nav class="track-list" aria-label="选择曲目"><button data-song="blue-hour" aria-pressed="true"><small>01 / 4K</small><span>蓝时</span></button><button data-song="night-flight" aria-pressed="false"><small>02 / 4K</small><span>夜航</span></button><button data-song="prism" aria-pressed="false"><small>03 / 4K</small><span>棱镜</span></button><button data-song="trajectories" aria-pressed="false"><small>04 / 4K</small><span>轨迹</span></button><button data-song="fold-space" aria-pressed="false"><small>05 / 4K</small><span>折叠空间</span></button></nav>
+    <div class="select-layout">
+      <div id="song-cover" class="cover" aria-label="蓝时：蓝紫色几何唱片封面">
+        <div class="cover-grid"></div><div class="halo halo-a"></div><div class="halo halo-b"></div>
+        <div class="fold fold-a"></div><div class="fold fold-b"></div><div class="fold fold-c"></div>
+        <span id="cover-number" class="cover-number">01 — ORIGINAL</span><div id="cover-title" class="cover-title">BLUE<br>HOUR<span>蓝时</span></div>
+        <span id="cover-caption" class="cover-caption">132 BPM / 01:15</span><div class="cover-cross">＋</div>
+      </div>
+      <section class="selection">
+        <div class="song-heading"><span class="eyebrow">原创曲库</span><h1><span id="song-name">蓝时</span><span id="song-subtitle">BLUE HOUR</span></h1><p id="song-credit">原创电子试作</p></div>
+        <div class="difficulty" aria-label="难度"><button data-difficulty="easy" aria-pressed="false"><span>EZ<small>EASY</small></span><b>01</b></button><button data-difficulty="light" aria-pressed="true"><span>HD<small>HARD</small></span><b>04</b></button><button data-difficulty="flow" aria-pressed="false"><span>IN<small>INSANE</small></span><b>08</b></button><button data-difficulty="expert" aria-pressed="false"><span>AT<small>ANOTHER</small></span><b>12</b></button></div>
+        <div class="record"><span>BEST</span><strong id="best-score">— — — — — — —</strong><small id="note-count"></small></div>
+        <button id="start" class="primary" disabled><span id="start-label">音频准备中</span><span>↗</span></button>
+        <div class="secondary"><button id="demo" disabled>看一遍</button><button id="guide-open">操作说明</button><span id="key-hint">4K · 固定键位</span></div>
+        <p id="status" role="status" class="status"></p>
+      </section>
+    </div>
+    <footer class="home-footer"><span>D F / J K · 固定键位</span><span>LOCAL BUILD · 0.5.0</span></footer>
+  </main>
+  <section id="play" class="screen play" hidden>
+    <canvas id="stage" aria-label="动态判定线音游舞台"></canvas>
+    <div class="hud"><button id="pause" aria-label="暂停">Ⅱ</button><div class="playing-song"><span id="playing-title">蓝时</span><small id="play-difficulty">LIGHT 03</small></div><div class="score"><strong id="score">0000000</strong><small id="accuracy">100.00%</small></div></div>
+    <div class="song-progress"><i id="progress"></i></div><div class="combo" id="combo"><strong>0</strong><span>COMBO</span></div>
+    <span id="demo-tag" class="demo-tag" hidden>AUTO / 演示</span>
+    <span id="mode-badge" class="mode-badge">4K</span>
+    <div id="tutorial-panel" class="tutorial-panel" hidden><div><strong id="lesson-title">01 点击</strong><span id="lesson-progress"></span></div><p id="lesson-hint"></p><span id="lesson-retry"></span></div>
+    <div id="keybed" class="keybed" aria-label="四个固定按键">
+      <button data-lane="0" aria-label="D 键"><span>D</span><small>01</small></button><button data-lane="1" aria-label="F 键"><span>F</span><small>02</small></button><button data-lane="2" aria-label="J 键"><span>J</span><small>03</small></button><button data-lane="3" aria-label="K 键"><span>K</span><small>04</small></button>
+    </div>
+  </section>
+  <section id="result" class="screen results" hidden>
+    <header class="topbar"><div class="brand"><span>折拍<small>SESSION / RESULT</small></span></div><span id="result-mode" class="eyebrow">LIGHT 03</span></header>
+    <div class="result-content"><span class="eyebrow" id="result-caption">蓝时 / BLUE HOUR</span><div class="result-rank" id="rank">S</div><h2 id="result-score">0000000</h2><p id="new-best">本次成绩</p>
+      <div id="result-stats" class="result-stats"><div><span>PERFECT</span><b id="stat-perfect">0</b></div><div><span>GOOD</span><b id="stat-good">0</b></div><div><span>MISS</span><b id="stat-miss">0</b></div></div>
+      <div id="result-detail" class="result-detail"><span>准确率 <b id="stat-accuracy">0%</b></span><span>最高连击 <b id="stat-combo">0</b></span></div>
+      <div class="result-actions"><button id="again" class="primary"><span id="again-label">再来一次</span><span>↗</span></button><button id="back" class="text-button">回到选曲</button></div>
+    </div>
+  </section>
+  <dialog id="settings"><form method="dialog"><div class="dialog-head"><h2>声音与延迟</h2><button aria-label="关闭">×</button></div></form>
+    <label>音乐 <output id="music-value"></output><input id="music" type="range" min="0" max="100" value="65"></label>
+    <label>打击音 <output id="hit-value"></output><input id="hit" type="range" min="0" max="100" value="80"></label><div class="drum-auditions"><button id="audition" class="audition">军鼓</button><button data-drum="hold" class="audition">通鼓</button><button data-drum="drag" class="audition">踩镲</button></div>
+    <label>谱面偏移 <output id="offset-value"></output><input id="offset" type="range" min="-200" max="200" step="5" value="0"></label><small class="setting-note">正值让音符晚到；蓝牙耳机可在这里校准。</small>
+    <label>音符流速 <output id="speed-value"></output><input id="speed" type="range" min="70" max="150" step="5" value="100"></label>
+  </dialog>
+  <dialog id="guide"><form method="dialog"><div class="dialog-head"><h2>键位固定，白线上下动</h2><button aria-label="关闭">×</button></div></form><div class="guide-notes"><div><i class="note-tap"></i><span>点击</span></div><div><i class="note-hold"></i><span>按住</span></div><div><i class="note-drag"></i><span>接住</span></div></div><p>4K：D F / J K。蓝色点击，金色长按；青色 Drag 可以提前按住，接住整串。</p><small>青色粗描边表示多押。13 级及以下最多双押。判定线会上下颠簸，按键位置不变。</small></dialog>
+  <dialog id="pause-menu"><div class="dialog-head"><h2 id="pause-title">暂停</h2><span>Ⅱ</span></div><button id="resume" class="primary">继续 <span>↗</span></button><button id="restart" class="menu-row">重新开始</button><button id="quit" class="menu-row">回到选曲</button></dialog>
+  <script type="module" src="src/web.js?v=24b2beed2b7f"></script>
+</body>
+</html>
