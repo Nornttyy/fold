@@ -1,5 +1,5 @@
-import {WINDOWS} from './chart.js?v=1b0c683651cd';
-import {timingSummary} from './timing.js?v=1b0c683651cd';
+import {WINDOWS} from './chart.js?v=f47ef371a3b2';
+import {timingSummary} from './timing.js?v=f47ef371a3b2';
 
 export class RhythmEngine {
   constructor(chart,{demo=false,lanes=4}={}) {

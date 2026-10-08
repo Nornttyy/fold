@@ -1,12 +1,12 @@
-import {lineGeometry,LANES} from './chart.js?v=1b0c683651cd';
-import {getSong,keyLabels} from './songs.js?v=1b0c683651cd';
-import {drawNote,drawHoldBody,noteHeightFor,noteWidthFor} from './note-art.js?v=1b0c683651cd';
-import {drawDecorations} from './decorations.js?v=1b0c683651cd';
-import {MAX_HIT_EFFECTS,makeHitEffect,hitEnvelope,drawHitEffect,drawHitLighting} from './hit-effects.js?v=1b0c683651cd';
-import {scrollPosition} from './scroll.js?v=1b0c683651cd';
-import {drawLineGuides} from './line-guide.js?v=1b0c683651cd';
-import {buildDragLinks,drawDragLinks} from './drag-trails.js?v=1b0c683651cd';
-import {musicalStage} from './musical-stage.js?v=1b0c683651cd';
+import {lineGeometry,LANES} from './chart.js?v=f47ef371a3b2';
+import {getSong,keyLabels} from './songs.js?v=f47ef371a3b2';
+import {drawNote,drawHoldBody,noteHeightFor,noteWidthFor} from './note-art.js?v=f47ef371a3b2';
+import {drawDecorations} from './decorations.js?v=f47ef371a3b2';
+import {MAX_HIT_EFFECTS,makeHitEffect,hitEnvelope,drawHitEffect,drawHitLighting} from './hit-effects.js?v=f47ef371a3b2';
+import {scrollPosition} from './scroll.js?v=f47ef371a3b2';
+import {drawLineGuides} from './line-guide.js?v=f47ef371a3b2';
+import {buildDragLinks,drawDragLinks} from './drag-trails.js?v=f47ef371a3b2';
+import {musicalStage} from './musical-stage.js?v=f47ef371a3b2';
 
 export class StageRenderer{
   constructor(canvas){

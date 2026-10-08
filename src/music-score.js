@@ -1,5 +1,5 @@
-import {getSong} from './songs.js?v=1b0c683651cd';
-import {EXPANSION_SCORES,EXPANSION_ARRANGEMENTS} from './expansion-score.js?v=1b0c683651cd';
+import {getSong} from './songs.js?v=f47ef371a3b2';
+import {EXPANSION_SCORES,EXPANSION_ARRANGEMENTS} from './expansion-score.js?v=f47ef371a3b2';
 export const SAMPLE_RATE=44100;
 export const SCORES={
   ...EXPANSION_SCORES,

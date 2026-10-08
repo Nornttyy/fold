@@ -1,4 +1,4 @@
-import {getSong} from './songs.js?v=1b0c683651cd';
+import {getSong} from './songs.js?v=f47ef371a3b2';
 
 // Authored visual speed changes. Integrating velocity keeps note positions continuous,
 // even across a speed change; note timestamps and judgment windows are untouched.

@@ -1,6 +1,6 @@
-import {RhythmEngine} from './engine.js?v=1b0c683651cd';
-import {cleanChart,LANES} from './chart.js?v=1b0c683651cd';
-import {keyMode} from './songs.js?v=1b0c683651cd';
+import {RhythmEngine} from './engine.js?v=f47ef371a3b2';
+import {cleanChart,LANES} from './chart.js?v=f47ef371a3b2';
+import {keyMode} from './songs.js?v=f47ef371a3b2';
 export const LESSONS=Object.freeze([
   {title:'点击',hint:'碰到白线时，按音符上的字母键',keys:4,sequence:[[0,0],[2,1],[4,2],[6,3]]},
   {title:'长按',hint:'按住蓝色长条，直到尾巴走完',keys:4,sequence:[[0,1,'hold',2],[4,2,'hold',2]]},

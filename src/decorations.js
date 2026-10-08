@@ -1,4 +1,4 @@
-import {drawNote} from './note-art.js?v=1b0c683651cd';
+import {drawNote} from './note-art.js?v=f47ef371a3b2';
 // All ornaments are background outlines: no hit time, lane, collision or engine entry.
 export function drawDecorations(c,g,time,song,{reduced=false,energy=0,combo=0,scene={energy:.3}}={}){
   const beat=time/song.beat,phase=0,cycle=reduced?0:(Math.cos(beat*Math.PI*.25)+1)/2,power=scene.energy;

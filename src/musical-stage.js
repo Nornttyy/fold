@@ -1,5 +1,5 @@
-import {getSong} from './songs.js?v=1b0c683651cd';
-import {musicScore} from './music-score.js?v=1b0c683651cd';
+import {getSong} from './songs.js?v=f47ef371a3b2';
+import {musicScore} from './music-score.js?v=f47ef371a3b2';
 
 const smooth=x=>{const k=Math.max(0,Math.min(1,x));return k*k*(3-2*k);};
 const line={intro:.72,verse:.68,bridge:.73,build:.65,drop:.59,outro:.72};

@@ -1,5 +1,5 @@
-import {HIT_COLORS} from './hit-effects.js?v=1b0c683651cd';
-import {noteWidthFor} from './note-art.js?v=1b0c683651cd';
+import {HIT_COLORS} from './hit-effects.js?v=f47ef371a3b2';
+import {noteWidthFor} from './note-art.js?v=f47ef371a3b2';
 
 export function upcomingGuides(notes,time,beat){
   const lanes=new Map(),lead=beat*1.5;
