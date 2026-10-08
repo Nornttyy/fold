@@ -6,7 +6,7 @@ export const BEAT=60/BPM;
 export const DURATION=160*BEAT+2.4;
 export const SONG=Object.freeze({title:'蓝时',subtitle:'BLUE HOUR',bpm:BPM,duration:DURATION,credit:'原创电子试作',file:'assets/blue-hour.wav'});
 export const LANES=4;
-export const CHART_REVISION='tier-drag-2';
+export const CHART_REVISION='tier-drag-3';
 export const KEYS=['KeyD','KeyF','KeyJ','KeyK'];
 export const WINDOWS=Object.freeze({perfect:.065,good:.135,miss:.16,release:.10,holdGrace:.16});
 export const DIFFICULTIES=Object.freeze({easy:{name:'EZ',label:'EASY',level:1},light:{name:'HD',label:'HARD',level:4},flow:{name:'IN',label:'INSANE',level:8},expert:{name:'AT',label:'ANOTHER',level:12}});
@@ -48,15 +48,27 @@ export function chartSources(songId='blue-hour'){
   }
   return [...groups.values()].sort((a,b)=>a.sample-b.sample);
 }
+// Drag is a deliberately placed phrase, not a default type for offbeat notes.
+export function dragPhrases(difficulty='light',songId='blue-hour'){
+  const {level}=chartPolicy(difficulty,songId),segments=musicScore(songId).segments,width=level<=5?4:level<14?6:8;
+  const peaks=segments.filter(s=>s.section==='drop');
+  const phrases=peaks.map((s,i)=>({start:s.start+(i?12:8),end:Math.min(s.end,s.start+(i?12:8)+width),lanes:level<=3?[i?3:0]:i?[2,3]:[0,1]}));
+  if(level>=14){const build=segments.find(s=>s.section==='build');if(build)phrases.unshift({start:build.end-4,end:build.end,lanes:[1,2]});}
+  return phrases;
+}
 export function makeChart(difficulty='light',songId='blue-hour'){
-  const s=getSong(songId),score=musicScore(s.id),notes=[],groups=chartSources(s.id),{level,maxChord}=chartPolicy(difficulty,s.id);
+  const s=getSong(songId),score=musicScore(s.id),notes=[],groups=chartSources(s.id),phrases=dragPhrases(difficulty,s.id),{level,maxChord}=chartPolicy(difficulty,s.id);
   const priority={crash:0,snare:1,kick:2,stab:3,growl:3.5,melody:4,lead:5,bass:6,hat:7};let index=0;
   for(const g of groups){
     const has=instrument=>g.events.find(e=>e.instrument===instrument),whole=Math.abs(g.beat-Math.round(g.beat))<.0001,half=Math.abs(g.beat*2-Math.round(g.beat*2))<.0001;
     const local=g.beat-g.bar*4,drop=g.section==='drop',build=g.section==='build',melody=has('melody'),hat=has('hat');
-    if(level<=2&&!(whole&&Math.round(g.beat)%2===0))continue;
-    if(level>=3&&level<=5&&(!whole||level===3&&Math.abs(local-1)<.001))continue;
-    if(level>=6&&level<=8&&!whole&&!(drop&&half&&melody&&(level>=7||g.bar%2)))continue;
+    const burst=phrases.find(p=>g.beat>=p.start&&g.beat<p.end);
+    if(level<=8&&burst){if(!(level<=3?whole:half))continue;}
+    else {
+      if(level<=2&&!(whole&&Math.round(g.beat)%2===0))continue;
+      if(level>=3&&level<=5&&(!whole||level===3&&Math.abs(local-1)<.001))continue;
+      if(level>=6&&level<=8&&!whole&&!(drop&&half&&melody&&(level>=7||g.bar%2)))continue;
+    }
     if(level>=9&&level<=11&&!half&&!(drop&&has('kick'))&&!(drop&&hat?.gain>=.7&&g.bar%4===3&&local>=2))continue;
     if(level>=12&&level<=13&&!half&&!(build&&has('snare'))&&!(drop&&has('kick'))&&!(drop&&hat?.gain>=.7&&(g.bar%2===1||level===13&&local>=3)&&local>=2))continue;
     if(level===14&&!half&&!(build&&has('snare'))&&!(drop&&has('kick'))&&!(drop&&g.bar%2===1&&local>=1))continue;
@@ -68,15 +80,14 @@ export function makeChart(difficulty='light',songId='blue-hour'){
     if(budget<=0)continue;
     const ordered=[...g.events].sort((a,b)=>priority[a.instrument]-priority[b.instrument]);
     let source=ordered[0],type='tap',end=g.time,endSource=null;
-    if(melody&&g.bar>=4&&g.bar%4===0&&Math.abs(local)<.0001){
+    if(burst){type='drag';if(melody)source=melody;}
+    else if(melody&&g.bar>=4&&g.bar%4===0&&Math.abs(local)<.0001){
       const target=g.beat+(['bridge','outro'].includes(g.section)||level<=3?2:1);
       endSource=score.events.find(e=>e.instrument==='melody'&&Math.abs(e.beat-target)<.0001);
       if(endSource){type='hold';source=melody;end=endSource.time;}
-    }else if(!whole&&level>=6&&(level<16||g.bar%3!==0)||build&&source.instrument==='snare'||drop&&g.bar%4>=2&&local>=2||melody&&g.bar%3===2&&local>=2){
-      type='drag';if(melody)source=melody;
     }
-    const phrase=LANE_PHRASES[s.id][Math.floor(g.bar/2)%2],pair=[[0,1],[2,3],[1,2]][Math.floor(g.bar/2)%3];
-    let lane=type==='drag'?pair[index%2]:phrase[index%phrase.length];index++;
+    const phrase=LANE_PHRASES[s.id][Math.floor(g.bar/2)%2];
+    let lane=burst?burst.lanes[Math.floor((g.beat-burst.start)/(level<=5?2:1))%burst.lanes.length]:phrase[index%phrase.length];index++;
     if(held.includes(lane))lane=Array.from({length:LANES},(_,k)=>(lane+k+1)%LANES).find(l=>!held.includes(l));
     const add=(lane,event=source,noteType=type,noteEnd=end)=>notes.push({lane,time:g.time,end:noteEnd,type:noteType,beat:g.beat,section:g.section,musicEvent:event.id,musicEndEvent:noteType==='hold'?endSource.id:null});
     add(lane);

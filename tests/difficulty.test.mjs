@@ -21,7 +21,7 @@ test('actual song rating controls chord limits, including occupied long-note fin
 test('four tiers of each song have meaningful density separation rather than renamed copies',()=>{
   for(const s of SONGS){const charts=modes.map(d=>makeChart(d,s.id));
     for(let i=1;i<charts.length;i++)assert.ok(charts[i].length/charts[i-1].length>=1.15,`${s.id} ${modes[i-1]} -> ${modes[i]}`);
-    for(const chart of charts){assert.ok(chart.filter(n=>n.type==='drag').length/chart.length>=.25);assert.ok(chart.some(n=>n.type==='tap'));assert.ok(chart.some(n=>n.type==='hold'));}
+    for(const chart of charts){assert.ok(chart.filter(n=>n.type==='drag').length/chart.length<.25);assert.ok(chart.some(n=>n.type==='tap'));assert.ok(chart.some(n=>n.type==='hold'));}
   }
 });
 test('no flick notes, input gestures, help entries or decorative arrows remain in the playable game',async()=>{

@@ -7,7 +7,7 @@ import {NOTE_COLORS,noteWidthFor,noteHeightFor,holdBodyWidth,drawHoldBody} from 
 import {HIT_COLORS} from '../src/hit-effects.js';
 import {EXPANSION_SCORES} from '../src/expansion-score.js';
 import {buildDragLinks,drawDragLinks} from '../src/drag-trails.js';
-import {makeChart,DIFFICULTIES,lineGeometry,chartPolicy} from '../src/chart.js';
+import {makeChart,DIFFICULTIES,lineGeometry,chartPolicy,dragPhrases} from '../src/chart.js';
 import {RhythmEngine} from '../src/engine.js';
 import {timingSummary} from '../src/timing.js';
 
@@ -81,12 +81,28 @@ test('drag rails link only neighbouring same-lane drags, not intervening taps or
   assert.equal(links[0].from,notes[0]);assert.equal(JSON.stringify(notes),before);
 });
 
-test('dense authored tiers have visible drag rails without adding links to sparse beginner notes',()=>{
+test('concentrated Drag phrases have linked rails, with simpler chains at beginner ratings',()=>{
   for(const s of SONGS)for(const d of Object.keys(DIFFICULTIES)){
     const e=new RhythmEngine(makeChart(d,s.id)),before=JSON.stringify(e.notes),links=buildDragLinks(e.notes,s.beat);
-    if(chartPolicy(d,s.id).level>=6)assert.ok(links.length>5,`${s.id} ${d} has chains`);else assert.equal(links.length,0);
+    assert.ok(links.length>=4,`${s.id} ${d} has chains`);
     for(const l of links){assert.equal(l.from.lane,l.to.lane);assert.equal(l.from.type,'drag');assert.equal(l.to.type,'drag');}
     assert.equal(JSON.stringify(e.notes),before);
+  }
+});
+test('Drag occurs only in two or three separated authored bursts, never throughout the song',()=>{
+  for(const s of SONGS)for(const d of Object.keys(DIFFICULTIES)){
+    const {level}=chartPolicy(d,s.id),phrases=dragPhrases(d,s.id),chart=makeChart(d,s.id),drags=chart.filter(n=>n.type==='drag');
+    assert.equal(phrases.length,level<14?2:3);
+    assert.ok(phrases.reduce((total,p)=>total+p.end-p.start,0)/s.beats<.17);
+    for(let i=1;i<phrases.length;i++)assert.ok(phrases[i].start-phrases[i-1].end>=8,'clear phrase breaks');
+    for(const n of drags)assert.ok(phrases.some(p=>n.beat>=p.start&&n.beat<p.end),'no scattered Drag outside a burst');
+    for(const p of phrases){
+      const burst=drags.filter(n=>n.beat>=p.start&&n.beat<p.end),inside=chart.filter(n=>n.beat>=p.start&&n.beat<p.end);
+      assert.ok(burst.length>=(level<=3?4:level<=5?8:level<14?12:8),`${s.id} ${d}: a burst contains many notes`);
+      assert.ok(burst.length/inside.length>.85);assert.ok(burst.some((n,i)=>i>0&&n.time-burst[i-1].time<=s.beat+1e-4));
+      if(level<=3)assert.equal(new Set(burst.map(n=>n.lane)).size,1);
+    }
+    assert.ok(drags.length/chart.length<.25,'large clusters do not imply high whole-song frequency');
   }
 });
 
