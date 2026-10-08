@@ -1,5 +1,5 @@
 export function hitTimeline(notes){return notes.flatMap(n=>n.type==='hold'?[{time:n.time,type:n.type,tail:false,strength:.9/Math.sqrt(n.chord||1)},{time:n.end,type:n.type,tail:true,strength:.6/Math.sqrt(n.chord||1)}]:[{time:n.time,type:n.type,tail:false,strength:1/Math.sqrt(n.chord||1)}]).sort((a,b)=>a.time-b.time);}
-const ASSET_VERSION='0.5.0';
+const ASSET_VERSION='0.7.0';
 export const assetUrl=path=>path+(path.includes('?')?'&':'?')+'v='+ASSET_VERSION;
 export class RhythmAudio {
   constructor(){this.context=null;this.raw={};this.buffers={};this.decoding=new Map();this.scheduledHits=new Set();this.source=null;this.anchor=0;this.position=0;this.running=false;this.musicVolume=.65;this.hitVolume=.8;this.sceneVersion=0;this.sceneName=null;this.sceneSource=null;this.sceneGain=null;this.sceneLoadPromise=null;}

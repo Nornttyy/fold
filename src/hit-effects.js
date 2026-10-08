@@ -1,5 +1,5 @@
 export const MAX_HIT_EFFECTS=48;
-export const HIT_COLORS={tap:'#51e5ff',hold:'#ffd36b',drag:'#38ffd0'};
+export const HIT_COLORS={tap:'#51e5ff',hold:'#59bfff',drag:'#ffe16e'};
 const lifetimes={tap:.44,hold:.65,drag:.40};
 const hash=n=>{const x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x);};
 export function makeHitEffect(event,{reduced=false}={}){

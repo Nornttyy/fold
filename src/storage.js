@@ -1,5 +1,5 @@
-import {getSong} from './songs.js?v=24b2beed2b7f';
-import {CHART_REVISION} from './chart.js?v=24b2beed2b7f';
+import {getSong} from './songs.js?v=1b0c683651cd';
+import {CHART_REVISION} from './chart.js?v=1b0c683651cd';
 const PREFIX='fold-rhythm-v1';
 export const defaults={music:.65,hit:.8,offset:0,speed:1,difficulty:'light',song:'blue-hour',tutorialDone:false};
 const clamp=(n,a,b)=>Number.isFinite(Number(n))?Math.max(a,Math.min(b,Number(n))):a;

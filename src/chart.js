@@ -1,5 +1,6 @@
-import {getSong} from './songs.js?v=24b2beed2b7f';
-import {musicScore} from './music-score.js?v=24b2beed2b7f';
+import {getSong} from './songs.js?v=1b0c683651cd';
+import {musicScore} from './music-score.js?v=1b0c683651cd';
+import {musicalStage} from './musical-stage.js?v=1b0c683651cd';
 export const BPM=132;
 export const BEAT=60/BPM;
 export const DURATION=160*BEAT+2.4;
@@ -16,6 +17,13 @@ const LANE_PHRASES={
   prism:[[0,1,3,2,0,3,2,1],[3,2,0,1,3,2,0,1]],
   trajectories:[[0,1,2,3,2,1,0,2],[3,2,1,0,1,2,3,0]],
   'fold-space':[[0,1,2,3,2,1,0,3],[3,0,1,2,0,1,3,2]],
+  critical:[[0,3,1,2,0,2,3,1],[3,0,2,1,3,1,0,2]],
+  glimmer:[[0,1,2,1,3,2,1,0],[3,2,1,2,0,1,2,3]],
+  daybreak:[[0,2,1,2,3,1,0,3],[3,1,2,1,0,2,3,0]],
+  arc:[[0,3,0,2,1,3,2,1],[3,0,3,1,2,0,1,2]],
+  zero:[[0,1,3,1,2,3,0,2],[3,2,0,2,1,0,3,1]],
+  overclock:[[0,2,3,1,0,3,2,1],[3,1,0,2,3,0,1,2]],
+  collapse:[[0,3,1,0,2,3,1,2],[3,0,2,3,1,0,2,1]],
 };
 export function cleanChart(notes){
   const result=[];
@@ -42,7 +50,7 @@ export function chartSources(songId='blue-hour'){
 }
 export function makeChart(difficulty='light',songId='blue-hour'){
   const s=getSong(songId),score=musicScore(s.id),notes=[],groups=chartSources(s.id),{level,maxChord}=chartPolicy(difficulty,s.id);
-  const priority={crash:0,snare:1,kick:2,stab:3,melody:4,lead:5,bass:6,hat:7};let index=0;
+  const priority={crash:0,snare:1,kick:2,stab:3,growl:3.5,melody:4,lead:5,bass:6,hat:7};let index=0;
   for(const g of groups){
     const has=instrument=>g.events.find(e=>e.instrument===instrument),whole=Math.abs(g.beat-Math.round(g.beat))<.0001,half=Math.abs(g.beat*2-Math.round(g.beat*2))<.0001;
     const local=g.beat-g.bar*4,drop=g.section==='drop',build=g.section==='build',melody=has('melody'),hat=has('hat');
@@ -52,6 +60,8 @@ export function makeChart(difficulty='light',songId='blue-hour'){
     if(level>=9&&level<=11&&!half&&!(drop&&has('kick'))&&!(drop&&hat?.gain>=.7&&g.bar%4===3&&local>=2))continue;
     if(level>=12&&level<=13&&!half&&!(build&&has('snare'))&&!(drop&&has('kick'))&&!(drop&&hat?.gain>=.7&&(g.bar%2===1||level===13&&local>=3)&&local>=2))continue;
     if(level===14&&!half&&!(build&&has('snare'))&&!(drop&&has('kick'))&&!(drop&&g.bar%2===1&&local>=1))continue;
+    // CRITICAL IN alternates dense and open bars; AT keeps the full cymbal stream.
+    if(['critical','collapse'].includes(s.id)&&level===15&&drop&&!half&&!has('growl')&&g.bar%2===0)continue;
     if(level<16&&Math.abs(g.beat*4-Math.round(g.beat*4))>.0001&&!hat&&!has('kick'))continue;
     if(g.events.every(e=>e.instrument==='hat'&&e.gain<.65))continue;
     const held=notes.filter(n=>n.type==='hold'&&n.time<g.time-.001&&n.end>g.time+.001).map(n=>n.lane),budget=maxChord-held.length;
@@ -81,21 +91,11 @@ export function makeChart(difficulty='light',songId='blue-hour'){
   return cleanChart(notes);
 }
 
-const frames=[
-  [0,.72],[16,.72],[32,.66],[48,.61],
-  [64,.55],[72,.63],[80,.73],[88,.58],
-  [96,.70],[104,.55],[112,.69],[120,.60],
-  [128,.68],[144,.72],[160,.72],
-];
 export function lineMotion(time,songId='blue-hour',difficulty='light') {
-  const song=getSong(songId),beat=Math.max(0,time/song.beat);
-  let a=frames[0], b=frames.at(-1);
-  for(let i=1;i<frames.length;i++) if(beat<=frames[i][0]){a=frames[i-1];b=frames[i];break;}
-  const k=Math.max(0,Math.min(1,(beat-a[0])/Math.max(.001,b[0]-a[0]))),s=k*k*(3-2*k);
-  const y=a[1]+(b[1]-a[1])*s;
+  const song=getSong(songId),beat=Math.max(0,time/song.beat),scene=musicalStage(time,songId);
   // A gentle four-beat vertical bob, never tilt, rotate or reverse approach.
-  const bob=Math.sin(beat*Math.PI/2)*.010,amount=difficulty==='easy'?.4:1;
-  return {y:.72+(y-.72+bob)*amount,tilt:0,angle:0};
+  const bob=Math.sin(beat*Math.PI/2)*(.005+scene.energy*.007),amount=difficulty==='easy'?.4:1;
+  return {y:.72+(scene.line-.72+bob)*amount,tilt:0,angle:0};
 }
 // Lane X never depends on lineMotion. Only Y at the note's fixed lane changes.
 export function laneX(lane,width,slots=4){return width*((lane+.5)/slots);}
