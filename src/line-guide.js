@@ -1,4 +1,5 @@
 import {HIT_COLORS} from './hit-effects.js';
+import {noteWidthFor} from './note-art.js';
 
 export function upcomingGuides(notes,time,beat){
   const lanes=new Map(),lead=beat*1.5;
@@ -11,7 +12,7 @@ export function upcomingGuides(notes,time,beat){
   return [...lanes.values()];
 }
 export function drawLineGuides(c,notes,g,time,beat,{reduced=false}={}){
-  const guides=upcomingGuides(notes,time,beat),span=Math.min(88,g.length/g.slots*.72);
+  const guides=upcomingGuides(notes,time,beat),span=noteWidthFor(g.length/.92,g.slots);
   c.save();c.globalCompositeOperation='lighter';
   for(let lane=0;lane<g.slots;lane++){
     const p=g.point(lane);c.globalAlpha=.35;c.strokeStyle='#90dfff';c.lineWidth=1;

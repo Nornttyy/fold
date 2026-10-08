@@ -6,7 +6,7 @@ import {scrollPosition,scrollVelocity,noteDistance,SPEED_SCORES} from '../src/sc
 import {upcomingGuides} from '../src/line-guide.js';
 import {RhythmAudio,hitTimeline} from '../src/audio.js';
 
-test('all five songs have authored positive visual acceleration and deceleration',()=>{
+test('all songs have authored positive visual acceleration and deceleration',()=>{
   for(const s of SONGS)for(const d of Object.keys(DIFFICULTIES)){
     const values=[];for(let t=0;t<s.duration;t+=.15){const v=scrollVelocity(t,s.id,d);assert.ok(v>=.60&&v<=2);values.push(v);}
     assert.ok(Math.max(...values)-Math.min(...values)>.25);

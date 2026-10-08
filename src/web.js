@@ -58,7 +58,12 @@ async function resume(){if(game.screen!=='paused')return;try{await game.audio.re
 function home(){game.audio.stop();clearKeys();game.tutorial=null;syncSettings();$('pause-menu').close();show('home');refreshChoice();if(game.audio.context&&!game.sceneMuted)interfaceMusic();}
 function result(){
   game.audio.stop();clearKeys();const r=game.engine.result(),d=DIFFICULTIES[game.settings.difficulty],training=!!game.tutorial,isBest=!training&&!game.demo&&saveBest(game.settings.difficulty,r,undefined,song().id);if(training){game.settings.tutorialDone=true;saveSettings(game.settings);}
-  $('result-mode').textContent=training?'入门练习':song().slots+'K / '+d.name;$('result-caption').textContent=training?'七步练习完成':song().title+' / '+song().subtitle+ (game.demo?' / 演示':'');$('rank').textContent=training?'✓':r.rank;$('result-score').textContent=training?'7 / 7':scoreText(r.score);$('new-best').textContent=training?'可以试试完整曲目了':game.demo?'演示不计成绩':isBest?'NEW BEST':'本次成绩';$('result-stats').hidden=training;$('result-detail').hidden=training;$('again-label').textContent=training?'开始演奏':'再来一次';for(const n of ['perfect','good','miss'])$('stat-'+n).textContent=r[n];$('stat-accuracy').textContent=r.accuracy.toFixed(2)+'%';$('stat-combo').textContent=r.maxCombo;show('result');if(!game.sceneMuted)interfaceMusic();
+  $('result-mode').textContent=training?'入门练习':song().slots+'K / '+d.name;$('result-caption').textContent=training?'七步练习完成':song().title+' / '+song().subtitle+ (game.demo?' / 演示':'');$('rank').textContent=training?'✓':r.rank;$('result-score').textContent=training?'7 / 7':scoreText(r.score);$('new-best').textContent=training?'可以试试完整曲目了':game.demo?'演示不计成绩':isBest?'NEW BEST':'本次成绩';$('result-stats').hidden=training;$('result-detail').hidden=training;$('again-label').textContent=training?'开始演奏':'再来一次';for(const n of ['perfect','good','miss'])$('stat-'+n).textContent=r[n];$('stat-accuracy').textContent=r.accuracy.toFixed(2)+'%';$('stat-combo').textContent=r.maxCombo;
+  const stats=r.timingStats;$('timing-panel').hidden=training||game.demo||!stats.total;
+  $('timing-early').textContent=stats.early;$('timing-late').textContent=stats.late;
+  $('timing-median').textContent=(stats.median>0?'+':'')+Math.round(stats.median)+' ms';
+  const peak=Math.max(1,...stats.histogram);$('timing-bars').replaceChildren(...stats.histogram.map((count,index)=>{const bar=document.createElement('i');bar.style.height=(count?Math.max(3,count/peak*100):0)+'%';bar.dataset.side=index<5?'early':index>5?'late':'center';return bar;}));
+  show('result');if(!game.sceneMuted)interfaceMusic();
 }
 function updateHUD(){
   const e=game.engine,s=song();
@@ -77,6 +82,12 @@ for(const b of keys){const lane=Number(b.dataset.lane);
 window.addEventListener('keydown',e=>{if(e.code==='Escape'&&game.screen==='play'){e.preventDefault();pause();return;}const lane=KEYS.indexOf(e.code);if(lane<0||game.screen!=='play'||game.demo)return;e.preventDefault();if(e.repeat||keys[lane].classList.contains('inactive')&&!keys[lane].classList.contains('incoming'))return;keys[lane].classList.add('down');game.engine.press(lane,'key-'+e.code,time(),{keyboard:true});flush();});
 window.addEventListener('keyup',e=>{const lane=KEYS.indexOf(e.code);if(lane<0||game.screen!=='play')return;e.preventDefault();game.engine.release('key-'+e.code,time());keys[lane].classList.remove('down');flush();});
 window.addEventListener('resize',()=>{if(['play','paused'].includes(game.screen))game.renderer.resize();});document.addEventListener('visibilitychange',()=>{if(document.hidden){pause('已暂停');game.audio.stopScene();}else if(['home','result'].includes(game.screen)&&game.audio.context&&!game.sceneMuted)interfaceMusic();});window.addEventListener('blur',()=>pause('已暂停'));
+// One source of truth: every library song gets a selectable chapter entry.
+$('track-list').replaceChildren(...SONGS.map(s=>{
+  const b=document.createElement('button'),number=document.createElement('small'),title=document.createElement('span');
+  b.dataset.song=s.id;b.setAttribute('aria-pressed','false');
+  number.textContent=String(SONGS.filter(x=>x.chapter===s.chapter).indexOf(s)+1).padStart(2,'0')+' / 4K';title.textContent=s.title;b.append(number,title);return b;
+}));
 for(const b of document.querySelectorAll('[data-difficulty]'))b.addEventListener('click',()=>choose(b.dataset.difficulty));for(const b of document.querySelectorAll('[data-song]'))b.addEventListener('click',()=>chooseSong(b.dataset.song));
 for(const b of document.querySelectorAll('[data-chapter]'))b.addEventListener('click',()=>chooseSong(SONGS.find(s=>s.chapter===Number(b.dataset.chapter)).id));
 $('fullscreen').addEventListener('click',async()=>{try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen();try{await screen.orientation?.lock('landscape');}catch{}}catch{$('status').textContent='当前浏览器不支持全屏';}});

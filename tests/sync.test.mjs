@@ -7,7 +7,7 @@ import {makeChart,DIFFICULTIES} from '../src/chart.js';
 import {musicScore,SAMPLE_RATE} from '../src/music-score.js';
 import {readBest,saveBest,readSettings} from '../src/storage.js';
 
-test('every note in all 20 charts is exactly on a rendered instrument attack, never arbitrary filler',()=>{
+test('every note in all 48 charts is exactly on a rendered instrument attack, never arbitrary filler',()=>{
   let count=0;
   for(const s of SONGS){const events=new Map(musicScore(s.id).events.map(e=>[e.id,e]));
     for(const d of Object.keys(DIFFICULTIES))for(const n of makeChart(d,s.id)){
@@ -18,8 +18,8 @@ test('every note in all 20 charts is exactly on a rendered instrument attack, ne
   }
   assert.ok(count>4000);
 });
-test('rendered WAV checksums and sample onset manifest match the shared score for all five songs',async()=>{
-  const m=JSON.parse(await readFile(new URL('../assets/sync-manifest.json',import.meta.url),'utf8'));assert.equal(m.sampleRate,SAMPLE_RATE);assert.equal(m.songs.length,5);
+test('rendered WAV checksums and sample onset manifest match the shared score for all twelve songs',async()=>{
+  const m=JSON.parse(await readFile(new URL('../assets/sync-manifest.json',import.meta.url),'utf8'));assert.equal(m.sampleRate,SAMPLE_RATE);assert.equal(m.songs.length,SONGS.length);
   for(const s of SONGS){const rendered=m.songs.find(x=>x.id===s.id),wav=await readFile(new URL('../'+s.file,import.meta.url));
     assert.equal(createHash('sha256').update(wav).digest('hex'),rendered.sha256,'WAV is the audited render, not a stale asset');
     assert.equal(rendered.scoreHash,createHash('sha256').update(JSON.stringify(musicScore(s.id).events)).digest('hex'),'instrument pitches, envelopes and gain data match the current render');

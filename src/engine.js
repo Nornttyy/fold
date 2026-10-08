@@ -1,4 +1,5 @@
 import {WINDOWS} from './chart.js';
+import {timingSummary} from './timing.js';
 
 export class RhythmEngine {
   constructor(chart,{demo=false,lanes=4}={}) {
@@ -14,8 +15,8 @@ export class RhythmEngine {
     if(['perfect','good','miss'].includes(note.state))return;
     note.state=quality;this[quality]++;
     this.combo=quality==='miss'?0:this.combo+1;this.maxCombo=Math.max(this.maxCombo,this.combo);
-    if(error!==null)this.errors.push(error*1000);
-    this.events.push({kind:'judge',quality,lane:note.lane,time,type:note.type,chord:note.chord||1,combo:this.combo});
+    if(error!==null&&quality!=='miss'&&note.type!=='drag'&&!this.demo)this.errors.push(error*1000);
+    this.events.push({kind:'judge',quality,lane:note.lane,time,type:note.type,chord:note.chord||1,combo:this.combo,error:note.type==='drag'||quality==='miss'?null:error});
   }
   candidate(lane,time,types) {
     return this.notes.filter(n=>n.lane===lane&&n.state==='pending'&&types.includes(n.type)&&Math.abs(time-n.time)<=WINDOWS.good)
@@ -25,7 +26,7 @@ export class RhythmEngine {
     const error=time-note.time,quality=Math.abs(error)<=WINDOWS.perfect?'perfect':'good';
     if(note.type==='hold') {
       note.state='holding';note.quality=quality;note.owner=owner;note.error=error;
-      this.events.push({kind:'head',quality,lane:note.lane,time,type:'hold',chord:note.chord||1,combo:this.combo});
+      this.events.push({kind:'head',quality,lane:note.lane,time,type:'hold',chord:note.chord||1,combo:this.combo,error});
     }else this.finish(note,quality,time,error);
   }
   press(lane,id,time,{keyboard=false}={}) {
@@ -74,5 +75,5 @@ export class RhythmEngine {
     }
   }
   drain(){return this.events.splice(0);}
-  result(){return {score:this.score,accuracy:this.accuracy,rank:this.rank,perfect:this.perfect,good:this.good,miss:this.miss,maxCombo:this.maxCombo,total:this.notes.length,timing:this.errors.length?this.errors.reduce((a,b)=>a+b,0)/this.errors.length:0};}
+  result(){const timingStats=timingSummary(this.errors);return {score:this.score,accuracy:this.accuracy,rank:this.rank,perfect:this.perfect,good:this.good,miss:this.miss,maxCombo:this.maxCombo,total:this.notes.length,timing:timingStats.mean,timingStats};}
 }

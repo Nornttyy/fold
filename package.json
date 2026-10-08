@@ -1,6 +1,6 @@
 {
   "name": "fold-rhythm",
-  "version": "0.5.0",
+  "version": "0.7.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,6 +9,6 @@
     "build": "node scripts/build-site.mjs",
     "deploy": "node scripts/publish-pages.mjs",
     "test": "node --test tests/*.test.mjs",
-    "check": "node --check src/web.js && node --check src/engine.js && node --check src/stage-v2.js && node --check src/hit-effects.js && node --check src/scroll.js && node --check src/line-guide.js && node --check src/audio.js && node --check src/chart.js && node --check src/music-score.js && node --check src/songs.js && node --check src/tutorial.js && node --check src/note-art.js && node --check src/decorations.js && node --check scripts/render-library.mjs && node --check scripts/render-feedback.mjs"
+    "check": "node --check src/web.js && node --check src/engine.js && node --check src/stage-v2.js && node --check src/hit-effects.js && node --check src/scroll.js && node --check src/line-guide.js && node --check src/audio.js && node --check src/chart.js && node --check src/music-score.js && node --check src/expansion-score.js && node --check src/songs.js && node --check src/tutorial.js && node --check src/note-art.js && node --check src/decorations.js && node --check src/musical-stage.js && node --check src/drag-trails.js && node --check src/timing.js && node --check scripts/render-library.mjs && node --check scripts/render-feedback.mjs && node --check scripts/build-site.mjs && node --check scripts/publish-pages.mjs"
   }
 }

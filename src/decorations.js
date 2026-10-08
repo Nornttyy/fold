@@ -1,20 +1,25 @@
 import {drawNote} from './note-art.js';
 // All ornaments are background outlines: no hit time, lane, collision or engine entry.
-export function drawDecorations(c,g,time,song,{reduced=false,energy=0,combo=0}={}){
-  const beat=time/song.beat,phase=0,cycle=reduced?0:(Math.cos(beat*Math.PI*.25)+1)/2;
+export function drawDecorations(c,g,time,song,{reduced=false,energy=0,combo=0,scene={energy:.3}}={}){
+  const beat=time/song.beat,phase=0,cycle=reduced?0:(Math.cos(beat*Math.PI*.25)+1)/2,power=scene.energy;
   c.save();c.globalCompositeOperation='lighter';c.lineWidth=1;c.setLineDash([24,18]);
   for(let lane=0;lane<g.slots;lane++){
-    const p=g.point(lane);c.strokeStyle=lane%2?'#df67ff':'#45dcff';c.shadowColor=c.strokeStyle;c.shadowBlur=reduced?0:18;c.globalAlpha=.08+energy*.15;
+    const p=g.point(lane);c.strokeStyle=lane%2?'#df67ff':'#45dcff';c.shadowColor=c.strokeStyle;c.shadowBlur=reduced?0:18;c.globalAlpha=.035+power*.10+energy*.15;
     c.beginPath();c.moveTo(p.x,38);c.lineTo(p.x,p.y-28);c.stroke();
   }
   c.setLineDash([]);c.restore();
-  c.save();c.translate(g.cx,g.cy);c.rotate(g.angle*.15+phase);c.globalCompositeOperation='lighter';c.globalAlpha=.19+Math.min(.08,combo/1000)+energy*.20;c.strokeStyle=song.accent;c.shadowColor=song.accent;c.shadowBlur=reduced?0:20;c.lineWidth=1;
+  c.save();c.translate(g.cx,g.cy);c.rotate(g.angle*.15+phase);c.globalCompositeOperation='lighter';c.globalAlpha=.06+power*.20+Math.min(.04,combo/1000)+energy*.20;c.strokeStyle=song.accent;c.shadowColor=song.accent;c.shadowBlur=reduced?0:20;c.lineWidth=1;
   const radius=Math.min(g.length*.38,160);
   if(song.theme==='prism'){
     for(let k=0;k<3;k++){c.save();c.rotate(k*Math.PI/3+phase);c.beginPath();c.moveTo(0,-radius);c.lineTo(radius*.86,radius*.5);c.lineTo(-radius*.86,radius*.5);c.closePath();c.stroke();c.restore();}
   }else if(song.theme==='rail'){
     for(let k=-2;k<=2;k++){c.beginPath();c.moveTo(-radius*1.5,k*26);c.lineTo(radius*1.5,k*26);c.stroke();}
     c.strokeRect(-radius,-radius*.55,radius*2,radius*1.1);
+  }else if(song.theme==='pulse'){
+    const size=radius*(reduced?1:1+cycle*power*.12);
+    for(let k=0;k<3;k++){
+      const r=size*(.65+k*.25);c.beginPath();c.moveTo(-r,0);c.lineTo(-r*.3,-r*.65);c.lineTo(r*.3,-r*.65);c.lineTo(r,0);c.lineTo(r*.3,r*.65);c.lineTo(-r*.3,r*.65);c.closePath();c.stroke();
+    }
   }else if(song.theme==='portal'){
     for(let k=0;k<3;k++){c.save();c.rotate(phase+k*.2);const r=radius*(.7+k*.3);c.strokeRect(-r,-r*.65,r*2,r*1.3);c.restore();}
   }else{
